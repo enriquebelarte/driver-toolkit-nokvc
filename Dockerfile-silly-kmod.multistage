@@ -2,7 +2,7 @@ ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 
 #FROM registry.ci.openshift.org/ocp/4.9:base
-FROM registry.access.redhat.com/ubi8/ubi:8.4-213
+FROM openshift/ose-base:v4.9.0-202203250906.p0.g3e174fc.assembly.stream
 ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 ARG KERNEL_VERSION=''
@@ -78,7 +78,7 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
 
 # Runtime driver container
 #FROM registry.ci.openshift.org/ocp/4.9:base
-FROM registry.access.redhat.com/ubi8/ubi:8.4-213
+FROM openshift/ose-base:v4.9.0-202203250906.p0.g3e174fc.assembly.stream
 ARG KERNEL_VERSION=''
 ARG RT_KERNEL_VERSION=''
 ARG RHEL_VERSION=''
