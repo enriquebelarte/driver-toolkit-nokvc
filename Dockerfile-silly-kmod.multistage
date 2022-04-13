@@ -1,8 +1,8 @@
 ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 
-FROM registry.ci.openshift.org/ocp/4.9:base
-
+#FROM registry.ci.openshift.org/ocp/4.9:base
+FROM registry.access.redhat.com/ubi8/ubi:8.4-213
 ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 ARG KERNEL_VERSION=''
@@ -77,7 +77,8 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
     echo -e "KERNEL_VERSION=\"${INSTALLED_KERNEL}\"\nRT_KERNEL_VERSION=\"${INSTALLED_RT_KERNEL}\"\nRHEL_VERSION=\"${RHEL_VERSION}\"" > /etc/driver-toolkit-release.sh
 
 # Runtime driver container
-FROM registry.ci.openshift.org/ocp/4.9:base
+#FROM registry.ci.openshift.org/ocp/4.9:base
+FROM registry.access.redhat.com/ubi8/ubi:8.4-213
 ARG KERNEL_VERSION=''
 ARG RT_KERNEL_VERSION=''
 ARG RHEL_VERSION=''
