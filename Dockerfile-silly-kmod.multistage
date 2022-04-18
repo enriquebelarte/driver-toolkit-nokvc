@@ -2,7 +2,7 @@ ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 
 #FROM registry.ci.openshift.org/ocp/4.9:base
-FROM openshift/ose-base:v4.9.0-202203250906.p0.g3e174fc.assembly.stream
+FROM quay.io/ebelarte/dtk-light:0.3
 ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 ARG KERNEL_VERSION=''
