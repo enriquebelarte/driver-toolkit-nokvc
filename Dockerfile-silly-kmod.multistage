@@ -38,7 +38,7 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
     && if [ $(arch) == "x86_64" ] || [ $(arch) == "aarch64" ]; then ARCH_DEP_PKGS="mokutil"; fi \
     && dnf -y install gcc-${GCC_VERSION} || dnf -y install gcc \
     && dnf -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists \
-        make xz diffutils git make openssl keyutils rpm-build pinentry jq ${ARCH_DEP_PKGS} \
+        make xz diffutils git make openssl keyutils ${ARCH_DEP_PKGS} \
     && dnf clean all 
 # Build module
       # Grab the software from upstream
