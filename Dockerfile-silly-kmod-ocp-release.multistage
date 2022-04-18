@@ -19,13 +19,14 @@ RUN if [ $(arch) = x86_64 ] && [[ -n "$RT_ENABLED" ]]; then \
     kernel-rt-devel${RT_KERNEL_VERSION:+-}${RT_KERNEL_VERSION} \
     kernel-rt-modules${RT_KERNEL_VERSION:+-}${RT_KERNEL_VERSION} \
     kernel-rt-modules-extra${RT_KERNEL_VERSION:+-}${RT_KERNEL_VERSION} \
+    && yum clean all \
     else \
     yum -y install \ 
     kernel-core${KERNEL_VERSION:+-}${KERNEL_VERSION} \
     kernel-devel${KERNEL_VERSION:+-}${KERNEL_VERSION} \
     kernel-headers${KERNEL_VERSION:+-}${KERNEL_VERSION} \
     kernel-modules${KERNEL_VERSION:+-}${KERNEL_VERSION} \
-    kernel-modules-extra${KERNEL_VERSION:+-}${KERNEL_VERSION} 
+    kernel-modules-extra${KERNEL_VERSION:+-}${KERNEL_VERSION} \ 
     && yum clean all ; fi
 
 
@@ -69,8 +70,7 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
 
 # Runtime driver container
 FROM quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7ec42dd76ab742a9c7a4044d9033c0f59fa9c7569348f51af4e50134a0dde0cf
-RUN yum -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists xz \
-         && yum clean all
+RUN yum -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists xz && yum clean all
 # Last layer for metadata for mapping the driver-toolkit to a specific kernel version
 RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-core); \
     export INSTALLED_RT_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-rt-core); \
