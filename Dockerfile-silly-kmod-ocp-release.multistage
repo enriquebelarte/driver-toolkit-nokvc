@@ -33,10 +33,10 @@ RUN if [ $(arch) = x86_64 ] && [[ -n "$RT_ENABLED" ]]; then \
 RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-core) \
     && GCC_VERSION=$(cat /lib/modules/${INSTALLED_KERNEL}/config | grep -Eo "Compiler: gcc \(GCC\) ([0-9\.]+)" | grep -Eo "([0-9\.]+)") \
     && if [ $(arch) == "x86_64" ] || [ $(arch) == "aarch64" ]; then ARCH_DEP_PKGS="mokutil"; fi \
-    && dnf -y install gcc-${GCC_VERSION} || dnf -y install gcc \
-    && dnf -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists \
+    && yum -y install gcc-${GCC_VERSION} || yum -y install gcc \
+    && yum -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists \
          xz diffutils git make openssl keyutils ${ARCH_DEP_PKGS} \
-    && dnf clean all 
+    && yum clean all 
 # Build module
       # Grab the software from upstream
       RUN git clone https://github.com/enriquebelarte/silly-kmod.git
