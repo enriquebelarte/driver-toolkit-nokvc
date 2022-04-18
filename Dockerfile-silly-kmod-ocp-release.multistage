@@ -70,6 +70,8 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
 
 # Runtime driver container
 FROM quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7ec42dd76ab742a9c7a4044d9033c0f59fa9c7569348f51af4e50134a0dde0cf
+RUN echo ${RHEL_VERSION} > /etc/yum/vars/releasever \
+    && yum config-manager --best --setopt=install_weak_deps=False --save
 RUN yum -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists xz && yum clean all
 # Last layer for metadata for mapping the driver-toolkit to a specific kernel version
 RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-core); \
