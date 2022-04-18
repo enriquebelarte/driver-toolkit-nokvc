@@ -47,7 +47,7 @@ spec:
       serviceAccount: silly-driver-container
       serviceAccountName: silly-driver-container
       containers:
-      - image: image-registry.openshift-image-registry.svc:5000/dtk-light/dtk-light@sha256:595d322ff763ea53d57f6ffe9b34de9624b5a37a9ef05489f0665c5892e98e7f
+      - image: image-registry.openshift-image-registry.svc:5000/dtk-light/dtk-light@sha256:6b34d69572c7ef6291d5bcbc638e900ac53200820a831f2263bba39b2b08179b
         name: silly-driver-container
         imagePullPolicy: Always
         command: ["/sbin/init"]

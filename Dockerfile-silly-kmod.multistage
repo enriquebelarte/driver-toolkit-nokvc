@@ -73,7 +73,9 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
 
 # Runtime driver container
 #FROM registry.ci.openshift.org/ocp/4.9:base
-FROM quay.io/ebelarte/dtk-light:0.3
+#FROM quay.io/ebelarte/dtk-light:0.3
+FROM quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7ec42dd76ab742a9c7a4044d9033c0f59fa9c7569348f51af4e50134a0dde0cf
+RUN yum -y install kmod && yum clean all
 # Last layer for metadata for mapping the driver-toolkit to a specific kernel version
 RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-core); \
     export INSTALLED_RT_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-rt-core); \
