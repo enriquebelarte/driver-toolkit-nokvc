@@ -1,5 +1,3 @@
-ARG RHEL_VERSION=''
-ARG BASE_DIGEST=''
 
 #FROM registry.ci.openshift.org/ocp/4.9:base
 FROM quay.io/ebelarte/dtk-light:0.3
@@ -11,9 +9,6 @@ ARG RT_KERNEL_VERSION=''
 USER root
 
 
-ARG KERNEL_VERSION=''
-ARG RT_KERNEL_VERSION=''
-ARG RHEL_VERSION=''
 ARG RT_ENABLED
 RUN echo ${RHEL_VERSION} > /etc/yum/vars/releasever \
     && yum config-manager --best --setopt=install_weak_deps=False --save
@@ -79,14 +74,6 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
 # Runtime driver container
 #FROM registry.ci.openshift.org/ocp/4.9:base
 FROM quay.io/ebelarte/dtk-light:0.3
-ARG KERNEL_VERSION=''
-ARG RT_KERNEL_VERSION=''
-ARG RHEL_VERSION=''
-ARG RT_ENABLED
-RUN echo ${RHEL_VERSION} > /etc/yum/vars/releasever \
-    && yum config-manager --best --setopt=install_weak_deps=False --save
-    && dnf -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists \
-    && dnf clean all
 # Copy kernel module
 COPY --from=0 /lib/modules/${INSTALLED_KERNEL}/silly.ko /lib/modules/${INSTALLED_KERNEL}/
 COPY --from=0 /etc/modules.d/silly.conf /etc/modules.d/silly.conf
