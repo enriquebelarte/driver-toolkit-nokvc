@@ -83,7 +83,7 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
 #COPY --from=0 /lib/modules/${INSTALLED_KERNEL}/silly.ko /lib/modules/${INSTALLED_KERNEL}/
 ## Test hardcoded kernel version
 COPY --from=0 /lib/modules/4.18.0-305.34.2.el8_4.x86_64/silly.ko /lib/modules/4.18.0-305.34.2.el8_4.x86_64/silly.ko
-RUN echo "silly" > /etc/modules-load.d/silly.conf
+RUN echo "silly" > /etc/modules-load.d/silly.conf && depmod -a
 # Labels
 LABEL io.k8s.description="Driver Toolkit module runtime" \
       io.k8s.display-name="Driver Toolkit" \
