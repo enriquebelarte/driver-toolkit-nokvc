@@ -1,6 +1,5 @@
 
-#FROM registry.ci.openshift.org/ocp/4.9:base
-FROM quay.io/ebelarte/dtk-light:0.3
+FROM quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7ec42dd76ab742a9c7a4044d9033c0f59fa9c7569348f51af4e50134a0dde0cf
 ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 ARG KERNEL_VERSION=''
@@ -13,23 +12,20 @@ ARG RT_ENABLED
 RUN echo ${RHEL_VERSION} > /etc/yum/vars/releasever \
     && yum config-manager --best --setopt=install_weak_deps=False --save
 
-# kernel packages needed to build drivers / kmods 
-RUN yum -y install \
-    kernel-core${KERNEL_VERSION:+-}${KERNEL_VERSION} \
-    kernel-devel${KERNEL_VERSION:+-}${KERNEL_VERSION} \
-    kernel-headers${KERNEL_VERSION:+-}${KERNEL_VERSION} \
-    kernel-modules${KERNEL_VERSION:+-}${KERNEL_VERSION} \
-    kernel-modules-extra${KERNEL_VERSION:+-}${KERNEL_VERSION} \
-    && yum clean all
-
-
-# real-time kernel packages use --build-arg RT_ENABLED=1
+# real-time kernel packages use --build-arg RT_ENABLED=1 else regular kernel packages
 RUN if [ $(arch) = x86_64 ] && [[ -n "$RT_ENABLED" ]]; then \
     yum -y install \
     kernel-rt-core${RT_KERNEL_VERSION:+-}${RT_KERNEL_VERSION} \
     kernel-rt-devel${RT_KERNEL_VERSION:+-}${RT_KERNEL_VERSION} \
     kernel-rt-modules${RT_KERNEL_VERSION:+-}${RT_KERNEL_VERSION} \
     kernel-rt-modules-extra${RT_KERNEL_VERSION:+-}${RT_KERNEL_VERSION} \
+    else \
+    yum -y install \ 
+    kernel-core${KERNEL_VERSION:+-}${KERNEL_VERSION} \
+    kernel-devel${KERNEL_VERSION:+-}${KERNEL_VERSION} \
+    kernel-headers${KERNEL_VERSION:+-}${KERNEL_VERSION} \
+    kernel-modules${KERNEL_VERSION:+-}${KERNEL_VERSION} \
+    kernel-modules-extra${KERNEL_VERSION:+-}${KERNEL_VERSION} 
     && yum clean all ; fi
 
 
@@ -38,7 +34,7 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
     && if [ $(arch) == "x86_64" ] || [ $(arch) == "aarch64" ]; then ARCH_DEP_PKGS="mokutil"; fi \
     && dnf -y install gcc-${GCC_VERSION} || dnf -y install gcc \
     && dnf -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists \
-        make xz diffutils git make openssl keyutils ${ARCH_DEP_PKGS} \
+         xz diffutils git make openssl keyutils ${ARCH_DEP_PKGS} \
     && dnf clean all 
 # Build module
       # Grab the software from upstream
@@ -51,7 +47,7 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
       && make install   KVER=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-core) KMODVER=${KMODVER}
 
       # Add the built module
-      RUN echo "silly" > /etc/modules-load.d/silly.conf
+      #RUN echo "silly" > /etc/modules-load.d/silly.conf
 
 LABEL io.k8s.description="Driver Toolkit provides the packages required to build driver containers for a specific version of RHEL 8 kernel" \
       io.k8s.display-name="Driver Toolkit" \
@@ -72,18 +68,16 @@ RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kerne
     echo -e "KERNEL_VERSION=\"${INSTALLED_KERNEL}\"\nRT_KERNEL_VERSION=\"${INSTALLED_RT_KERNEL}\"\nRHEL_VERSION=\"${RHEL_VERSION}\"" > /etc/driver-toolkit-release.sh
 
 # Runtime driver container
-#FROM registry.ci.openshift.org/ocp/4.9:base
-FROM quay.io/ebelarte/dtk-light:0.3
-RUN yum -y install kmod && yum clean all
+FROM quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7ec42dd76ab742a9c7a4044d9033c0f59fa9c7569348f51af4e50134a0dde0cf
+RUN yum -y install elfutils-libelf-devel kmod binutils kabi-dw kernel-abi-stablelists xz \
+         && yum clean all
 # Last layer for metadata for mapping the driver-toolkit to a specific kernel version
 RUN export INSTALLED_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-core); \
     export INSTALLED_RT_KERNEL=$(rpm -q --qf "%{VERSION}-%{RELEASE}.%{ARCH}"  kernel-rt-core); \
     echo "{ \"KERNEL_VERSION\": \"${INSTALLED_KERNEL}\", \"RT_KERNEL_VERSION\": \"${INSTALLED_RT_KERNEL}\", \"RHEL_VERSION\": \"${RHEL_VERSION}\" }" > /etc/driver-toolkit-release.json ; \
     echo -e "KERNEL_VERSION=\"${INSTALLED_KERNEL}\"\nRT_KERNEL_VERSION=\"${INSTALLED_RT_KERNEL}\"\nRHEL_VERSION=\"${RHEL_VERSION}\"" > /etc/driver-toolkit-release.sh
 # Copy kernel module
-#COPY --from=0 /lib/modules/${INSTALLED_KERNEL}/silly.ko /lib/modules/${INSTALLED_KERNEL}/
-## Test hardcoded kernel version
-COPY --from=0 /lib/modules/4.18.0-305.34.2.el8_4.x86_64/silly.ko /lib/modules/4.18.0-305.34.2.el8_4.x86_64/silly.ko
+COPY --from=0 /lib/modules/${INSTALLED_KERNEL}/silly.ko /lib/modules/${INSTALLED_KERNEL}/silly.ko
 RUN echo "silly" > /etc/modules-load.d/silly.conf && depmod -a
 # Labels
 LABEL io.k8s.description="Driver Toolkit module runtime" \

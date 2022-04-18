@@ -39,7 +39,8 @@ spec:
   strategy:
     type: Docker                      
     dockerStrategy:
-      dockerfilePath: Dockerfile-silly-kmod.multistage
+      #dockerfilePath: Dockerfile-silly-kmod.multistage
+      dockerfilePath: Dockerfile-silly-kmod-ocp-release.multistage
       buildArgs:
         - name: KMODVER
           value: DEMO
